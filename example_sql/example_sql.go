@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/thulab/iginx-client-go/client"
+	"github.com/THUIGinX/IGinX-client-go/client"
 )
 
 var session *client.Session

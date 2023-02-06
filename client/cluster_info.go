@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/thulab/iginx-client-go/rpc"
+	"github.com/THUIGinX/IGinX-client-go/rpc"
 )
 
 type IginxInfo struct {

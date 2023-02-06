@@ -9,8 +9,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/THUIGinX/IGinX-client-go/rpc"
 	"github.com/apache/thrift/lib/go/thrift"
-	"github.com/thulab/iginx-client-go/rpc"
 )
 
 const (

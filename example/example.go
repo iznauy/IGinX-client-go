@@ -5,8 +5,8 @@ import (
 	"log"
 	"math"
 
-	"github.com/thulab/iginx-client-go/client"
-	"github.com/thulab/iginx-client-go/rpc"
+	"github.com/THUIGinX/IGinX-client-go/client"
+	"github.com/THUIGinX/IGinX-client-go/rpc"
 )
 
 var (

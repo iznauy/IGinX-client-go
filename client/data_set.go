@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/thulab/iginx-client-go/rpc"
+	"github.com/THUIGinX/IGinX-client-go/rpc"
 )
 
 type QueryDataSet struct {

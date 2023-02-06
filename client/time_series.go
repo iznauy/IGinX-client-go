@@ -1,6 +1,6 @@
 package client
 
-import "github.com/thulab/iginx-client-go/rpc"
+import "github.com/THUIGinX/IGinX-client-go/rpc"
 
 type TimeSeries struct {
 	path     string
