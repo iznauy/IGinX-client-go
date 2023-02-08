@@ -1,10 +1,8 @@
 # iginx-client-go
 
-This is the GoLang client of [IginX](https://github.com/THUIGinX/IGinX) .
+This is the GoLang client of [IGinX](https://github.com/THUIGinX/IGinX) .
 
-IginX(Intelligent/IoTDB Engine X) is an open-source clustering system for multi-dimensional scaling of standalone time series databases through generalized sharding. It is emerged and evolved from the middleware system [IKR](https://github.com/thulab/iotdb-kairosdb), already deployed in real applications.
-
-
+IGinX (Intelligent enGine X) aims to facilitate users in profiting from their data assets that might spread across various storage/database engines. It is an open source polystore system, which provides an integrated data management service over a set of one or more potentially heterogeneous database/storage engines, serving heterogeneous workloads.
 
 ## Prerequisites
 
@@ -12,15 +10,11 @@ IginX(Intelligent/IoTDB Engine X) is an open-source clustering system for multi-
 golang >= 1.13
 ```
 
-
-
 ## Install
 
 ```
 go get github.com/THUIGinX/IGinX-client-go
 ```
-
-
 
 ## Example
 
