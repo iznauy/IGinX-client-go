@@ -12,12 +12,12 @@ var (
 )
 
 const (
-	s1 = "test.go.a"
-	s2 = "test.go.b"
-	s3 = "test.go.c"
-	s4 = "test.go.d"
-	s5 = "test.go.e"
-	s6 = "test.go.f"
+	s1 = "test.gs.a"
+	s2 = "test.gs.b"
+	s3 = "test.gs.c"
+	s4 = "test.gs.d"
+	s5 = "test.gs.e"
+	s6 = "test.gs.f"
 )
 
 func init() {
@@ -44,11 +44,45 @@ func main() {
 	}
 	fmt.Printf("replica number: %d\n", replicaNum)
 
-	insertColumnData()
+	writeData()
+	queryData()
 }
 
-func insertColumnData() {
-	fmt.Println("insertColumnData")
+func queryData() {
+	fmt.Println("query data: start")
+	cursor, err := session.ExecuteQuery("select * from test.gs", 1)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fields, err := cursor.GetFields()
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, field := range fields {
+		fmt.Printf("field: %+v\n", field)
+	}
+	for {
+		hasMore, err := cursor.HasMore()
+		if err != nil {
+			log.Fatal(err)
+		}
+		if !hasMore {
+			break
+		}
+		values, err := cursor.NextRow()
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Printf("values: %+v\n", values)
+	}
+	if err := cursor.Close(); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("query data: finish")
+}
+
+func writeData() {
+	fmt.Println("write data: start")
 	path := []string{s1, s2, s3, s4, s5, s6}
 	timestamps := []int64{10, 11}
 	values := [][]interface{}{
@@ -64,5 +98,5 @@ func insertColumnData() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println()
+	fmt.Println("write data: finish")
 }

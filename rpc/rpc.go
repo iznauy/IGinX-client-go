@@ -13182,13 +13182,11 @@ func (p *GetClusterInfoResp) String() string {
 // Attributes:
 //  - SessionId
 //  - Statement
-//  - FetchSize
-//  - Timeout
+//  - QueryId
 type ExecuteStatementReq struct {
   SessionId int64 `thrift:"sessionId,1,required" db:"sessionId" json:"sessionId"`
   Statement string `thrift:"statement,2,required" db:"statement" json:"statement"`
-  FetchSize *int32 `thrift:"fetchSize,3" db:"fetchSize" json:"fetchSize,omitempty"`
-  Timeout *int64 `thrift:"timeout,4" db:"timeout" json:"timeout,omitempty"`
+  QueryId *int64 `thrift:"queryId,3" db:"queryId" json:"queryId,omitempty"`
 }
 
 func NewExecuteStatementReq() *ExecuteStatementReq {
@@ -13203,26 +13201,15 @@ func (p *ExecuteStatementReq) GetSessionId() int64 {
 func (p *ExecuteStatementReq) GetStatement() string {
   return p.Statement
 }
-var ExecuteStatementReq_FetchSize_DEFAULT int32
-func (p *ExecuteStatementReq) GetFetchSize() int32 {
-  if !p.IsSetFetchSize() {
-    return ExecuteStatementReq_FetchSize_DEFAULT
+var ExecuteStatementReq_QueryId_DEFAULT int64
+func (p *ExecuteStatementReq) GetQueryId() int64 {
+  if !p.IsSetQueryId() {
+    return ExecuteStatementReq_QueryId_DEFAULT
   }
-return *p.FetchSize
+return *p.QueryId
 }
-var ExecuteStatementReq_Timeout_DEFAULT int64
-func (p *ExecuteStatementReq) GetTimeout() int64 {
-  if !p.IsSetTimeout() {
-    return ExecuteStatementReq_Timeout_DEFAULT
-  }
-return *p.Timeout
-}
-func (p *ExecuteStatementReq) IsSetFetchSize() bool {
-  return p.FetchSize != nil
-}
-
-func (p *ExecuteStatementReq) IsSetTimeout() bool {
-  return p.Timeout != nil
+func (p *ExecuteStatementReq) IsSetQueryId() bool {
+  return p.QueryId != nil
 }
 
 func (p *ExecuteStatementReq) Read(ctx context.Context, iprot thrift.TProtocol) error {
@@ -13263,18 +13250,8 @@ func (p *ExecuteStatementReq) Read(ctx context.Context, iprot thrift.TProtocol) 
         }
       }
     case 3:
-      if fieldTypeId == thrift.I32 {
-        if err := p.ReadField3(ctx, iprot); err != nil {
-          return err
-        }
-      } else {
-        if err := iprot.Skip(ctx, fieldTypeId); err != nil {
-          return err
-        }
-      }
-    case 4:
       if fieldTypeId == thrift.I64 {
-        if err := p.ReadField4(ctx, iprot); err != nil {
+        if err := p.ReadField3(ctx, iprot); err != nil {
           return err
         }
       } else {
@@ -13322,19 +13299,10 @@ func (p *ExecuteStatementReq)  ReadField2(ctx context.Context, iprot thrift.TPro
 }
 
 func (p *ExecuteStatementReq)  ReadField3(ctx context.Context, iprot thrift.TProtocol) error {
-  if v, err := iprot.ReadI32(ctx); err != nil {
+  if v, err := iprot.ReadI64(ctx); err != nil {
   return thrift.PrependError("error reading field 3: ", err)
 } else {
-  p.FetchSize = &v
-}
-  return nil
-}
-
-func (p *ExecuteStatementReq)  ReadField4(ctx context.Context, iprot thrift.TProtocol) error {
-  if v, err := iprot.ReadI64(ctx); err != nil {
-  return thrift.PrependError("error reading field 4: ", err)
-} else {
-  p.Timeout = &v
+  p.QueryId = &v
 }
   return nil
 }
@@ -13346,7 +13314,6 @@ func (p *ExecuteStatementReq) Write(ctx context.Context, oprot thrift.TProtocol)
     if err := p.writeField1(ctx, oprot); err != nil { return err }
     if err := p.writeField2(ctx, oprot); err != nil { return err }
     if err := p.writeField3(ctx, oprot); err != nil { return err }
-    if err := p.writeField4(ctx, oprot); err != nil { return err }
   }
   if err := oprot.WriteFieldStop(ctx); err != nil {
     return thrift.PrependError("write field stop error: ", err) }
@@ -13376,25 +13343,13 @@ func (p *ExecuteStatementReq) writeField2(ctx context.Context, oprot thrift.TPro
 }
 
 func (p *ExecuteStatementReq) writeField3(ctx context.Context, oprot thrift.TProtocol) (err error) {
-  if p.IsSetFetchSize() {
-    if err := oprot.WriteFieldBegin(ctx, "fetchSize", thrift.I32, 3); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:fetchSize: ", p), err) }
-    if err := oprot.WriteI32(ctx, int32(*p.FetchSize)); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T.fetchSize (3) field write error: ", p), err) }
+  if p.IsSetQueryId() {
+    if err := oprot.WriteFieldBegin(ctx, "queryId", thrift.I64, 3); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:queryId: ", p), err) }
+    if err := oprot.WriteI64(ctx, int64(*p.QueryId)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.queryId (3) field write error: ", p), err) }
     if err := oprot.WriteFieldEnd(ctx); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T write field end error 3:fetchSize: ", p), err) }
-  }
-  return err
-}
-
-func (p *ExecuteStatementReq) writeField4(ctx context.Context, oprot thrift.TProtocol) (err error) {
-  if p.IsSetTimeout() {
-    if err := oprot.WriteFieldBegin(ctx, "timeout", thrift.I64, 4); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T write field begin error 4:timeout: ", p), err) }
-    if err := oprot.WriteI64(ctx, int64(*p.Timeout)); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T.timeout (4) field write error: ", p), err) }
-    if err := oprot.WriteFieldEnd(ctx); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T write field end error 4:timeout: ", p), err) }
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 3:queryId: ", p), err) }
   }
   return err
 }
@@ -13407,17 +13362,11 @@ func (p *ExecuteStatementReq) Equals(other *ExecuteStatementReq) bool {
   }
   if p.SessionId != other.SessionId { return false }
   if p.Statement != other.Statement { return false }
-  if p.FetchSize != other.FetchSize {
-    if p.FetchSize == nil || other.FetchSize == nil {
+  if p.QueryId != other.QueryId {
+    if p.QueryId == nil || other.QueryId == nil {
       return false
     }
-    if (*p.FetchSize) != (*other.FetchSize) { return false }
-  }
-  if p.Timeout != other.Timeout {
-    if p.Timeout == nil || other.Timeout == nil {
-      return false
-    }
-    if (*p.Timeout) != (*other.Timeout) { return false }
+    if (*p.QueryId) != (*other.QueryId) { return false }
   }
   return true
 }
@@ -13431,20 +13380,10 @@ func (p *ExecuteStatementReq) String() string {
 
 // Attributes:
 //  - Status
-//  - Type
 //  - QueryId
-//  - Columns
-//  - TagsList
-//  - DataTypeList
-//  - QueryDataSet
 type ExecuteStatementResp struct {
   Status *Status `thrift:"status,1,required" db:"status" json:"status"`
-  Type SqlType `thrift:"type,2,required" db:"type" json:"type"`
-  QueryId *int64 `thrift:"queryId,3" db:"queryId" json:"queryId,omitempty"`
-  Columns []string `thrift:"columns,4" db:"columns" json:"columns,omitempty"`
-  TagsList []map[string]string `thrift:"tagsList,5" db:"tagsList" json:"tagsList,omitempty"`
-  DataTypeList []DataType `thrift:"dataTypeList,6" db:"dataTypeList" json:"dataTypeList,omitempty"`
-  QueryDataSet *QueryDataSetV2 `thrift:"queryDataSet,7" db:"queryDataSet" json:"queryDataSet,omitempty"`
+  QueryId *int64 `thrift:"queryId,2" db:"queryId" json:"queryId,omitempty"`
 }
 
 func NewExecuteStatementResp() *ExecuteStatementResp {
@@ -13458,38 +13397,12 @@ func (p *ExecuteStatementResp) GetStatus() *Status {
   }
 return p.Status
 }
-
-func (p *ExecuteStatementResp) GetType() SqlType {
-  return p.Type
-}
 var ExecuteStatementResp_QueryId_DEFAULT int64
 func (p *ExecuteStatementResp) GetQueryId() int64 {
   if !p.IsSetQueryId() {
     return ExecuteStatementResp_QueryId_DEFAULT
   }
 return *p.QueryId
-}
-var ExecuteStatementResp_Columns_DEFAULT []string
-
-func (p *ExecuteStatementResp) GetColumns() []string {
-  return p.Columns
-}
-var ExecuteStatementResp_TagsList_DEFAULT []map[string]string
-
-func (p *ExecuteStatementResp) GetTagsList() []map[string]string {
-  return p.TagsList
-}
-var ExecuteStatementResp_DataTypeList_DEFAULT []DataType
-
-func (p *ExecuteStatementResp) GetDataTypeList() []DataType {
-  return p.DataTypeList
-}
-var ExecuteStatementResp_QueryDataSet_DEFAULT *QueryDataSetV2
-func (p *ExecuteStatementResp) GetQueryDataSet() *QueryDataSetV2 {
-  if !p.IsSetQueryDataSet() {
-    return ExecuteStatementResp_QueryDataSet_DEFAULT
-  }
-return p.QueryDataSet
 }
 func (p *ExecuteStatementResp) IsSetStatus() bool {
   return p.Status != nil
@@ -13499,29 +13412,12 @@ func (p *ExecuteStatementResp) IsSetQueryId() bool {
   return p.QueryId != nil
 }
 
-func (p *ExecuteStatementResp) IsSetColumns() bool {
-  return p.Columns != nil
-}
-
-func (p *ExecuteStatementResp) IsSetTagsList() bool {
-  return p.TagsList != nil
-}
-
-func (p *ExecuteStatementResp) IsSetDataTypeList() bool {
-  return p.DataTypeList != nil
-}
-
-func (p *ExecuteStatementResp) IsSetQueryDataSet() bool {
-  return p.QueryDataSet != nil
-}
-
 func (p *ExecuteStatementResp) Read(ctx context.Context, iprot thrift.TProtocol) error {
   if _, err := iprot.ReadStructBegin(ctx); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
   }
 
   var issetStatus bool = false;
-  var issetType bool = false;
 
   for {
     _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin(ctx)
@@ -13542,59 +13438,8 @@ func (p *ExecuteStatementResp) Read(ctx context.Context, iprot thrift.TProtocol)
         }
       }
     case 2:
-      if fieldTypeId == thrift.I32 {
-        if err := p.ReadField2(ctx, iprot); err != nil {
-          return err
-        }
-        issetType = true
-      } else {
-        if err := iprot.Skip(ctx, fieldTypeId); err != nil {
-          return err
-        }
-      }
-    case 3:
       if fieldTypeId == thrift.I64 {
-        if err := p.ReadField3(ctx, iprot); err != nil {
-          return err
-        }
-      } else {
-        if err := iprot.Skip(ctx, fieldTypeId); err != nil {
-          return err
-        }
-      }
-    case 4:
-      if fieldTypeId == thrift.LIST {
-        if err := p.ReadField4(ctx, iprot); err != nil {
-          return err
-        }
-      } else {
-        if err := iprot.Skip(ctx, fieldTypeId); err != nil {
-          return err
-        }
-      }
-    case 5:
-      if fieldTypeId == thrift.LIST {
-        if err := p.ReadField5(ctx, iprot); err != nil {
-          return err
-        }
-      } else {
-        if err := iprot.Skip(ctx, fieldTypeId); err != nil {
-          return err
-        }
-      }
-    case 6:
-      if fieldTypeId == thrift.LIST {
-        if err := p.ReadField6(ctx, iprot); err != nil {
-          return err
-        }
-      } else {
-        if err := iprot.Skip(ctx, fieldTypeId); err != nil {
-          return err
-        }
-      }
-    case 7:
-      if fieldTypeId == thrift.STRUCT {
-        if err := p.ReadField7(ctx, iprot); err != nil {
+        if err := p.ReadField2(ctx, iprot); err != nil {
           return err
         }
       } else {
@@ -13617,9 +13462,6 @@ func (p *ExecuteStatementResp) Read(ctx context.Context, iprot thrift.TProtocol)
   if !issetStatus{
     return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field Status is not set"));
   }
-  if !issetType{
-    return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field Type is not set"));
-  }
   return nil
 }
 
@@ -13632,114 +13474,11 @@ func (p *ExecuteStatementResp)  ReadField1(ctx context.Context, iprot thrift.TPr
 }
 
 func (p *ExecuteStatementResp)  ReadField2(ctx context.Context, iprot thrift.TProtocol) error {
-  if v, err := iprot.ReadI32(ctx); err != nil {
-  return thrift.PrependError("error reading field 2: ", err)
-} else {
-  temp := SqlType(v)
-  p.Type = temp
-}
-  return nil
-}
-
-func (p *ExecuteStatementResp)  ReadField3(ctx context.Context, iprot thrift.TProtocol) error {
   if v, err := iprot.ReadI64(ctx); err != nil {
-  return thrift.PrependError("error reading field 3: ", err)
+  return thrift.PrependError("error reading field 2: ", err)
 } else {
   p.QueryId = &v
 }
-  return nil
-}
-
-func (p *ExecuteStatementResp)  ReadField4(ctx context.Context, iprot thrift.TProtocol) error {
-  _, size, err := iprot.ReadListBegin(ctx)
-  if err != nil {
-    return thrift.PrependError("error reading list begin: ", err)
-  }
-  tSlice := make([]string, 0, size)
-  p.Columns =  tSlice
-  for i := 0; i < size; i ++ {
-var _elem184 string
-    if v, err := iprot.ReadString(ctx); err != nil {
-    return thrift.PrependError("error reading field 0: ", err)
-} else {
-    _elem184 = v
-}
-    p.Columns = append(p.Columns, _elem184)
-  }
-  if err := iprot.ReadListEnd(ctx); err != nil {
-    return thrift.PrependError("error reading list end: ", err)
-  }
-  return nil
-}
-
-func (p *ExecuteStatementResp)  ReadField5(ctx context.Context, iprot thrift.TProtocol) error {
-  _, size, err := iprot.ReadListBegin(ctx)
-  if err != nil {
-    return thrift.PrependError("error reading list begin: ", err)
-  }
-  tSlice := make([]map[string]string, 0, size)
-  p.TagsList =  tSlice
-  for i := 0; i < size; i ++ {
-    _, _, size, err := iprot.ReadMapBegin(ctx)
-    if err != nil {
-      return thrift.PrependError("error reading map begin: ", err)
-    }
-    tMap := make(map[string]string, size)
-    _elem185 :=  tMap
-    for i := 0; i < size; i ++ {
-var _key186 string
-      if v, err := iprot.ReadString(ctx); err != nil {
-      return thrift.PrependError("error reading field 0: ", err)
-} else {
-      _key186 = v
-}
-var _val187 string
-      if v, err := iprot.ReadString(ctx); err != nil {
-      return thrift.PrependError("error reading field 0: ", err)
-} else {
-      _val187 = v
-}
-      _elem185[_key186] = _val187
-    }
-    if err := iprot.ReadMapEnd(ctx); err != nil {
-      return thrift.PrependError("error reading map end: ", err)
-    }
-    p.TagsList = append(p.TagsList, _elem185)
-  }
-  if err := iprot.ReadListEnd(ctx); err != nil {
-    return thrift.PrependError("error reading list end: ", err)
-  }
-  return nil
-}
-
-func (p *ExecuteStatementResp)  ReadField6(ctx context.Context, iprot thrift.TProtocol) error {
-  _, size, err := iprot.ReadListBegin(ctx)
-  if err != nil {
-    return thrift.PrependError("error reading list begin: ", err)
-  }
-  tSlice := make([]DataType, 0, size)
-  p.DataTypeList =  tSlice
-  for i := 0; i < size; i ++ {
-var _elem188 DataType
-    if v, err := iprot.ReadI32(ctx); err != nil {
-    return thrift.PrependError("error reading field 0: ", err)
-} else {
-    temp := DataType(v)
-    _elem188 = temp
-}
-    p.DataTypeList = append(p.DataTypeList, _elem188)
-  }
-  if err := iprot.ReadListEnd(ctx); err != nil {
-    return thrift.PrependError("error reading list end: ", err)
-  }
-  return nil
-}
-
-func (p *ExecuteStatementResp)  ReadField7(ctx context.Context, iprot thrift.TProtocol) error {
-  p.QueryDataSet = &QueryDataSetV2{}
-  if err := p.QueryDataSet.Read(ctx, iprot); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.QueryDataSet), err)
-  }
   return nil
 }
 
@@ -13749,11 +13488,6 @@ func (p *ExecuteStatementResp) Write(ctx context.Context, oprot thrift.TProtocol
   if p != nil {
     if err := p.writeField1(ctx, oprot); err != nil { return err }
     if err := p.writeField2(ctx, oprot); err != nil { return err }
-    if err := p.writeField3(ctx, oprot); err != nil { return err }
-    if err := p.writeField4(ctx, oprot); err != nil { return err }
-    if err := p.writeField5(ctx, oprot); err != nil { return err }
-    if err := p.writeField6(ctx, oprot); err != nil { return err }
-    if err := p.writeField7(ctx, oprot); err != nil { return err }
   }
   if err := oprot.WriteFieldStop(ctx); err != nil {
     return thrift.PrependError("write field stop error: ", err) }
@@ -13774,106 +13508,13 @@ func (p *ExecuteStatementResp) writeField1(ctx context.Context, oprot thrift.TPr
 }
 
 func (p *ExecuteStatementResp) writeField2(ctx context.Context, oprot thrift.TProtocol) (err error) {
-  if err := oprot.WriteFieldBegin(ctx, "type", thrift.I32, 2); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:type: ", p), err) }
-  if err := oprot.WriteI32(ctx, int32(p.Type)); err != nil {
-  return thrift.PrependError(fmt.Sprintf("%T.type (2) field write error: ", p), err) }
-  if err := oprot.WriteFieldEnd(ctx); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field end error 2:type: ", p), err) }
-  return err
-}
-
-func (p *ExecuteStatementResp) writeField3(ctx context.Context, oprot thrift.TProtocol) (err error) {
   if p.IsSetQueryId() {
-    if err := oprot.WriteFieldBegin(ctx, "queryId", thrift.I64, 3); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:queryId: ", p), err) }
+    if err := oprot.WriteFieldBegin(ctx, "queryId", thrift.I64, 2); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:queryId: ", p), err) }
     if err := oprot.WriteI64(ctx, int64(*p.QueryId)); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T.queryId (3) field write error: ", p), err) }
+    return thrift.PrependError(fmt.Sprintf("%T.queryId (2) field write error: ", p), err) }
     if err := oprot.WriteFieldEnd(ctx); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T write field end error 3:queryId: ", p), err) }
-  }
-  return err
-}
-
-func (p *ExecuteStatementResp) writeField4(ctx context.Context, oprot thrift.TProtocol) (err error) {
-  if p.IsSetColumns() {
-    if err := oprot.WriteFieldBegin(ctx, "columns", thrift.LIST, 4); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T write field begin error 4:columns: ", p), err) }
-    if err := oprot.WriteListBegin(ctx, thrift.STRING, len(p.Columns)); err != nil {
-      return thrift.PrependError("error writing list begin: ", err)
-    }
-    for _, v := range p.Columns {
-      if err := oprot.WriteString(ctx, string(v)); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err) }
-    }
-    if err := oprot.WriteListEnd(ctx); err != nil {
-      return thrift.PrependError("error writing list end: ", err)
-    }
-    if err := oprot.WriteFieldEnd(ctx); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T write field end error 4:columns: ", p), err) }
-  }
-  return err
-}
-
-func (p *ExecuteStatementResp) writeField5(ctx context.Context, oprot thrift.TProtocol) (err error) {
-  if p.IsSetTagsList() {
-    if err := oprot.WriteFieldBegin(ctx, "tagsList", thrift.LIST, 5); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T write field begin error 5:tagsList: ", p), err) }
-    if err := oprot.WriteListBegin(ctx, thrift.MAP, len(p.TagsList)); err != nil {
-      return thrift.PrependError("error writing list begin: ", err)
-    }
-    for _, v := range p.TagsList {
-      if err := oprot.WriteMapBegin(ctx, thrift.STRING, thrift.STRING, len(v)); err != nil {
-        return thrift.PrependError("error writing map begin: ", err)
-      }
-      for k, v := range v {
-        if err := oprot.WriteString(ctx, string(k)); err != nil {
-        return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err) }
-        if err := oprot.WriteString(ctx, string(v)); err != nil {
-        return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err) }
-      }
-      if err := oprot.WriteMapEnd(ctx); err != nil {
-        return thrift.PrependError("error writing map end: ", err)
-      }
-    }
-    if err := oprot.WriteListEnd(ctx); err != nil {
-      return thrift.PrependError("error writing list end: ", err)
-    }
-    if err := oprot.WriteFieldEnd(ctx); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T write field end error 5:tagsList: ", p), err) }
-  }
-  return err
-}
-
-func (p *ExecuteStatementResp) writeField6(ctx context.Context, oprot thrift.TProtocol) (err error) {
-  if p.IsSetDataTypeList() {
-    if err := oprot.WriteFieldBegin(ctx, "dataTypeList", thrift.LIST, 6); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T write field begin error 6:dataTypeList: ", p), err) }
-    if err := oprot.WriteListBegin(ctx, thrift.I32, len(p.DataTypeList)); err != nil {
-      return thrift.PrependError("error writing list begin: ", err)
-    }
-    for _, v := range p.DataTypeList {
-      if err := oprot.WriteI32(ctx, int32(v)); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err) }
-    }
-    if err := oprot.WriteListEnd(ctx); err != nil {
-      return thrift.PrependError("error writing list end: ", err)
-    }
-    if err := oprot.WriteFieldEnd(ctx); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T write field end error 6:dataTypeList: ", p), err) }
-  }
-  return err
-}
-
-func (p *ExecuteStatementResp) writeField7(ctx context.Context, oprot thrift.TProtocol) (err error) {
-  if p.IsSetQueryDataSet() {
-    if err := oprot.WriteFieldBegin(ctx, "queryDataSet", thrift.STRUCT, 7); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T write field begin error 7:queryDataSet: ", p), err) }
-    if err := p.QueryDataSet.Write(ctx, oprot); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.QueryDataSet), err)
-    }
-    if err := oprot.WriteFieldEnd(ctx); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T write field end error 7:queryDataSet: ", p), err) }
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 2:queryId: ", p), err) }
   }
   return err
 }
@@ -13885,33 +13526,12 @@ func (p *ExecuteStatementResp) Equals(other *ExecuteStatementResp) bool {
     return false
   }
   if !p.Status.Equals(other.Status) { return false }
-  if p.Type != other.Type { return false }
   if p.QueryId != other.QueryId {
     if p.QueryId == nil || other.QueryId == nil {
       return false
     }
     if (*p.QueryId) != (*other.QueryId) { return false }
   }
-  if len(p.Columns) != len(other.Columns) { return false }
-  for i, _tgt := range p.Columns {
-    _src189 := other.Columns[i]
-    if _tgt != _src189 { return false }
-  }
-  if len(p.TagsList) != len(other.TagsList) { return false }
-  for i, _tgt := range p.TagsList {
-    _src190 := other.TagsList[i]
-    if len(_tgt) != len(_src190) { return false }
-    for k, _tgt := range _tgt {
-      _src191 := _src190[k]
-      if _tgt != _src191 { return false }
-    }
-  }
-  if len(p.DataTypeList) != len(other.DataTypeList) { return false }
-  for i, _tgt := range p.DataTypeList {
-    _src192 := other.DataTypeList[i]
-    if _tgt != _src192 { return false }
-  }
-  if !p.QueryDataSet.Equals(other.QueryDataSet) { return false }
   return true
 }
 
@@ -14008,13 +13628,13 @@ func (p *QueryDataSetV2)  ReadField1(ctx context.Context, iprot thrift.TProtocol
   tSlice := make([][]byte, 0, size)
   p.ValuesList =  tSlice
   for i := 0; i < size; i ++ {
-var _elem193 []byte
+var _elem184 []byte
     if v, err := iprot.ReadBinary(ctx); err != nil {
     return thrift.PrependError("error reading field 0: ", err)
 } else {
-    _elem193 = v
+    _elem184 = v
 }
-    p.ValuesList = append(p.ValuesList, _elem193)
+    p.ValuesList = append(p.ValuesList, _elem184)
   }
   if err := iprot.ReadListEnd(ctx); err != nil {
     return thrift.PrependError("error reading list end: ", err)
@@ -14030,13 +13650,13 @@ func (p *QueryDataSetV2)  ReadField2(ctx context.Context, iprot thrift.TProtocol
   tSlice := make([][]byte, 0, size)
   p.BitmapList =  tSlice
   for i := 0; i < size; i ++ {
-var _elem194 []byte
+var _elem185 []byte
     if v, err := iprot.ReadBinary(ctx); err != nil {
     return thrift.PrependError("error reading field 0: ", err)
 } else {
-    _elem194 = v
+    _elem185 = v
 }
-    p.BitmapList = append(p.BitmapList, _elem194)
+    p.BitmapList = append(p.BitmapList, _elem185)
   }
   if err := iprot.ReadListEnd(ctx); err != nil {
     return thrift.PrependError("error reading list end: ", err)
@@ -14102,13 +13722,13 @@ func (p *QueryDataSetV2) Equals(other *QueryDataSetV2) bool {
   }
   if len(p.ValuesList) != len(other.ValuesList) { return false }
   for i, _tgt := range p.ValuesList {
-    _src195 := other.ValuesList[i]
-    if bytes.Compare(_tgt, _src195) != 0 { return false }
+    _src186 := other.ValuesList[i]
+    if bytes.Compare(_tgt, _src186) != 0 { return false }
   }
   if len(p.BitmapList) != len(other.BitmapList) { return false }
   for i, _tgt := range p.BitmapList {
-    _src196 := other.BitmapList[i]
-    if bytes.Compare(_tgt, _src196) != 0 { return false }
+    _src187 := other.BitmapList[i]
+    if bytes.Compare(_tgt, _src187) != 0 { return false }
   }
   return true
 }
@@ -14521,11 +14141,17 @@ func (p *FetchResultsReq) String() string {
 // Attributes:
 //  - Status
 //  - HasMoreResults
+//  - Columns
+//  - TagsList
+//  - DataTypeList
 //  - QueryDataSet
 type FetchResultsResp struct {
   Status *Status `thrift:"status,1,required" db:"status" json:"status"`
   HasMoreResults bool `thrift:"hasMoreResults,2,required" db:"hasMoreResults" json:"hasMoreResults"`
-  QueryDataSet *QueryDataSetV2 `thrift:"queryDataSet,3" db:"queryDataSet" json:"queryDataSet,omitempty"`
+  Columns []string `thrift:"columns,3" db:"columns" json:"columns,omitempty"`
+  TagsList []map[string]string `thrift:"tagsList,4" db:"tagsList" json:"tagsList,omitempty"`
+  DataTypeList []DataType `thrift:"dataTypeList,5" db:"dataTypeList" json:"dataTypeList,omitempty"`
+  QueryDataSet *QueryDataSetV2 `thrift:"queryDataSet,6" db:"queryDataSet" json:"queryDataSet,omitempty"`
 }
 
 func NewFetchResultsResp() *FetchResultsResp {
@@ -14543,6 +14169,21 @@ return p.Status
 func (p *FetchResultsResp) GetHasMoreResults() bool {
   return p.HasMoreResults
 }
+var FetchResultsResp_Columns_DEFAULT []string
+
+func (p *FetchResultsResp) GetColumns() []string {
+  return p.Columns
+}
+var FetchResultsResp_TagsList_DEFAULT []map[string]string
+
+func (p *FetchResultsResp) GetTagsList() []map[string]string {
+  return p.TagsList
+}
+var FetchResultsResp_DataTypeList_DEFAULT []DataType
+
+func (p *FetchResultsResp) GetDataTypeList() []DataType {
+  return p.DataTypeList
+}
 var FetchResultsResp_QueryDataSet_DEFAULT *QueryDataSetV2
 func (p *FetchResultsResp) GetQueryDataSet() *QueryDataSetV2 {
   if !p.IsSetQueryDataSet() {
@@ -14552,6 +14193,18 @@ return p.QueryDataSet
 }
 func (p *FetchResultsResp) IsSetStatus() bool {
   return p.Status != nil
+}
+
+func (p *FetchResultsResp) IsSetColumns() bool {
+  return p.Columns != nil
+}
+
+func (p *FetchResultsResp) IsSetTagsList() bool {
+  return p.TagsList != nil
+}
+
+func (p *FetchResultsResp) IsSetDataTypeList() bool {
+  return p.DataTypeList != nil
 }
 
 func (p *FetchResultsResp) IsSetQueryDataSet() bool {
@@ -14596,8 +14249,38 @@ func (p *FetchResultsResp) Read(ctx context.Context, iprot thrift.TProtocol) err
         }
       }
     case 3:
-      if fieldTypeId == thrift.STRUCT {
+      if fieldTypeId == thrift.LIST {
         if err := p.ReadField3(ctx, iprot); err != nil {
+          return err
+        }
+      } else {
+        if err := iprot.Skip(ctx, fieldTypeId); err != nil {
+          return err
+        }
+      }
+    case 4:
+      if fieldTypeId == thrift.LIST {
+        if err := p.ReadField4(ctx, iprot); err != nil {
+          return err
+        }
+      } else {
+        if err := iprot.Skip(ctx, fieldTypeId); err != nil {
+          return err
+        }
+      }
+    case 5:
+      if fieldTypeId == thrift.LIST {
+        if err := p.ReadField5(ctx, iprot); err != nil {
+          return err
+        }
+      } else {
+        if err := iprot.Skip(ctx, fieldTypeId); err != nil {
+          return err
+        }
+      }
+    case 6:
+      if fieldTypeId == thrift.STRUCT {
+        if err := p.ReadField6(ctx, iprot); err != nil {
           return err
         }
       } else {
@@ -14644,6 +14327,91 @@ func (p *FetchResultsResp)  ReadField2(ctx context.Context, iprot thrift.TProtoc
 }
 
 func (p *FetchResultsResp)  ReadField3(ctx context.Context, iprot thrift.TProtocol) error {
+  _, size, err := iprot.ReadListBegin(ctx)
+  if err != nil {
+    return thrift.PrependError("error reading list begin: ", err)
+  }
+  tSlice := make([]string, 0, size)
+  p.Columns =  tSlice
+  for i := 0; i < size; i ++ {
+var _elem188 string
+    if v, err := iprot.ReadString(ctx); err != nil {
+    return thrift.PrependError("error reading field 0: ", err)
+} else {
+    _elem188 = v
+}
+    p.Columns = append(p.Columns, _elem188)
+  }
+  if err := iprot.ReadListEnd(ctx); err != nil {
+    return thrift.PrependError("error reading list end: ", err)
+  }
+  return nil
+}
+
+func (p *FetchResultsResp)  ReadField4(ctx context.Context, iprot thrift.TProtocol) error {
+  _, size, err := iprot.ReadListBegin(ctx)
+  if err != nil {
+    return thrift.PrependError("error reading list begin: ", err)
+  }
+  tSlice := make([]map[string]string, 0, size)
+  p.TagsList =  tSlice
+  for i := 0; i < size; i ++ {
+    _, _, size, err := iprot.ReadMapBegin(ctx)
+    if err != nil {
+      return thrift.PrependError("error reading map begin: ", err)
+    }
+    tMap := make(map[string]string, size)
+    _elem189 :=  tMap
+    for i := 0; i < size; i ++ {
+var _key190 string
+      if v, err := iprot.ReadString(ctx); err != nil {
+      return thrift.PrependError("error reading field 0: ", err)
+} else {
+      _key190 = v
+}
+var _val191 string
+      if v, err := iprot.ReadString(ctx); err != nil {
+      return thrift.PrependError("error reading field 0: ", err)
+} else {
+      _val191 = v
+}
+      _elem189[_key190] = _val191
+    }
+    if err := iprot.ReadMapEnd(ctx); err != nil {
+      return thrift.PrependError("error reading map end: ", err)
+    }
+    p.TagsList = append(p.TagsList, _elem189)
+  }
+  if err := iprot.ReadListEnd(ctx); err != nil {
+    return thrift.PrependError("error reading list end: ", err)
+  }
+  return nil
+}
+
+func (p *FetchResultsResp)  ReadField5(ctx context.Context, iprot thrift.TProtocol) error {
+  _, size, err := iprot.ReadListBegin(ctx)
+  if err != nil {
+    return thrift.PrependError("error reading list begin: ", err)
+  }
+  tSlice := make([]DataType, 0, size)
+  p.DataTypeList =  tSlice
+  for i := 0; i < size; i ++ {
+var _elem192 DataType
+    if v, err := iprot.ReadI32(ctx); err != nil {
+    return thrift.PrependError("error reading field 0: ", err)
+} else {
+    temp := DataType(v)
+    _elem192 = temp
+}
+    p.DataTypeList = append(p.DataTypeList, _elem192)
+  }
+  if err := iprot.ReadListEnd(ctx); err != nil {
+    return thrift.PrependError("error reading list end: ", err)
+  }
+  return nil
+}
+
+func (p *FetchResultsResp)  ReadField6(ctx context.Context, iprot thrift.TProtocol) error {
   p.QueryDataSet = &QueryDataSetV2{}
   if err := p.QueryDataSet.Read(ctx, iprot); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.QueryDataSet), err)
@@ -14658,6 +14426,9 @@ func (p *FetchResultsResp) Write(ctx context.Context, oprot thrift.TProtocol) er
     if err := p.writeField1(ctx, oprot); err != nil { return err }
     if err := p.writeField2(ctx, oprot); err != nil { return err }
     if err := p.writeField3(ctx, oprot); err != nil { return err }
+    if err := p.writeField4(ctx, oprot); err != nil { return err }
+    if err := p.writeField5(ctx, oprot); err != nil { return err }
+    if err := p.writeField6(ctx, oprot); err != nil { return err }
   }
   if err := oprot.WriteFieldStop(ctx); err != nil {
     return thrift.PrependError("write field stop error: ", err) }
@@ -14688,14 +14459,84 @@ func (p *FetchResultsResp) writeField2(ctx context.Context, oprot thrift.TProtoc
 }
 
 func (p *FetchResultsResp) writeField3(ctx context.Context, oprot thrift.TProtocol) (err error) {
+  if p.IsSetColumns() {
+    if err := oprot.WriteFieldBegin(ctx, "columns", thrift.LIST, 3); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:columns: ", p), err) }
+    if err := oprot.WriteListBegin(ctx, thrift.STRING, len(p.Columns)); err != nil {
+      return thrift.PrependError("error writing list begin: ", err)
+    }
+    for _, v := range p.Columns {
+      if err := oprot.WriteString(ctx, string(v)); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err) }
+    }
+    if err := oprot.WriteListEnd(ctx); err != nil {
+      return thrift.PrependError("error writing list end: ", err)
+    }
+    if err := oprot.WriteFieldEnd(ctx); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 3:columns: ", p), err) }
+  }
+  return err
+}
+
+func (p *FetchResultsResp) writeField4(ctx context.Context, oprot thrift.TProtocol) (err error) {
+  if p.IsSetTagsList() {
+    if err := oprot.WriteFieldBegin(ctx, "tagsList", thrift.LIST, 4); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 4:tagsList: ", p), err) }
+    if err := oprot.WriteListBegin(ctx, thrift.MAP, len(p.TagsList)); err != nil {
+      return thrift.PrependError("error writing list begin: ", err)
+    }
+    for _, v := range p.TagsList {
+      if err := oprot.WriteMapBegin(ctx, thrift.STRING, thrift.STRING, len(v)); err != nil {
+        return thrift.PrependError("error writing map begin: ", err)
+      }
+      for k, v := range v {
+        if err := oprot.WriteString(ctx, string(k)); err != nil {
+        return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err) }
+        if err := oprot.WriteString(ctx, string(v)); err != nil {
+        return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err) }
+      }
+      if err := oprot.WriteMapEnd(ctx); err != nil {
+        return thrift.PrependError("error writing map end: ", err)
+      }
+    }
+    if err := oprot.WriteListEnd(ctx); err != nil {
+      return thrift.PrependError("error writing list end: ", err)
+    }
+    if err := oprot.WriteFieldEnd(ctx); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 4:tagsList: ", p), err) }
+  }
+  return err
+}
+
+func (p *FetchResultsResp) writeField5(ctx context.Context, oprot thrift.TProtocol) (err error) {
+  if p.IsSetDataTypeList() {
+    if err := oprot.WriteFieldBegin(ctx, "dataTypeList", thrift.LIST, 5); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 5:dataTypeList: ", p), err) }
+    if err := oprot.WriteListBegin(ctx, thrift.I32, len(p.DataTypeList)); err != nil {
+      return thrift.PrependError("error writing list begin: ", err)
+    }
+    for _, v := range p.DataTypeList {
+      if err := oprot.WriteI32(ctx, int32(v)); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err) }
+    }
+    if err := oprot.WriteListEnd(ctx); err != nil {
+      return thrift.PrependError("error writing list end: ", err)
+    }
+    if err := oprot.WriteFieldEnd(ctx); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 5:dataTypeList: ", p), err) }
+  }
+  return err
+}
+
+func (p *FetchResultsResp) writeField6(ctx context.Context, oprot thrift.TProtocol) (err error) {
   if p.IsSetQueryDataSet() {
-    if err := oprot.WriteFieldBegin(ctx, "queryDataSet", thrift.STRUCT, 3); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:queryDataSet: ", p), err) }
+    if err := oprot.WriteFieldBegin(ctx, "queryDataSet", thrift.STRUCT, 6); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 6:queryDataSet: ", p), err) }
     if err := p.QueryDataSet.Write(ctx, oprot); err != nil {
       return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.QueryDataSet), err)
     }
     if err := oprot.WriteFieldEnd(ctx); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T write field end error 3:queryDataSet: ", p), err) }
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 6:queryDataSet: ", p), err) }
   }
   return err
 }
@@ -14708,6 +14549,25 @@ func (p *FetchResultsResp) Equals(other *FetchResultsResp) bool {
   }
   if !p.Status.Equals(other.Status) { return false }
   if p.HasMoreResults != other.HasMoreResults { return false }
+  if len(p.Columns) != len(other.Columns) { return false }
+  for i, _tgt := range p.Columns {
+    _src193 := other.Columns[i]
+    if _tgt != _src193 { return false }
+  }
+  if len(p.TagsList) != len(other.TagsList) { return false }
+  for i, _tgt := range p.TagsList {
+    _src194 := other.TagsList[i]
+    if len(_tgt) != len(_src194) { return false }
+    for k, _tgt := range _tgt {
+      _src195 := _src194[k]
+      if _tgt != _src195 { return false }
+    }
+  }
+  if len(p.DataTypeList) != len(other.DataTypeList) { return false }
+  for i, _tgt := range p.DataTypeList {
+    _src196 := other.DataTypeList[i]
+    if _tgt != _src196 { return false }
+  }
   if !p.QueryDataSet.Equals(other.QueryDataSet) { return false }
   return true
 }

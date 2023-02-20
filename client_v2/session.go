@@ -72,6 +72,45 @@ func (c *Client) GetReplicaNum(ctx context.Context, req *rpc.GetReplicaNumReq) (
 	return resp, nil
 }
 
+func (c *Client) ExecuteStatement(ctx context.Context, req *rpc.ExecuteStatementReq) (*rpc.ExecuteStatementResp, error) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	resp, err := c.client.ExecuteStatement(ctx, req)
+	if err != nil {
+		return nil, errors.Wrap(ErrNetwork, err.Error())
+	}
+	if err = verifyStatus(resp.GetStatus()); err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *Client) FetchResults(ctx context.Context, req *rpc.FetchResultsReq) (*rpc.FetchResultsResp, error) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	resp, err := c.client.FetchResults(ctx, req)
+	if err != nil {
+		return nil, errors.Wrap(ErrNetwork, err.Error())
+	}
+	if err = verifyStatus(resp.GetStatus()); err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *Client) CloseStatement(ctx context.Context, req *rpc.CloseStatementReq) (*rpc.Status, error) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	status, err := c.client.CloseStatement(ctx, req)
+	if err != nil {
+		return nil, errors.Wrap(ErrNetwork, err.Error())
+	}
+	if err = verifyStatus(status); err != nil {
+		return nil, err
+	}
+	return status, nil
+}
+
 func (c *Client) InsertColumnRecords(ctx context.Context, req *rpc.InsertColumnRecordsReq) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -261,6 +300,106 @@ func (s *Session) GetReplicaNum() (int32, error) {
 		return 0, err
 	}
 	return resp.GetReplicaNum(), nil
+}
+
+func (s *Session) ExecuteQuery(statement string, fetchSize int32) (*IGinXStream, error) {
+	req := rpc.ExecuteStatementReq{
+		SessionId: s.sessionId,
+		Statement: statement,
+	}
+	resp, err := s.client.ExecuteStatement(context.Background(), &req)
+	if errors.Cause(err) == ErrExecution {
+		return nil, err
+	}
+	if errors.Cause(err) == ErrNetwork {
+		reconnect := s.reconnect()
+		if !reconnect && s.settings.EnableHighAvailable {
+			if err := s.Open(); err == nil {
+				reconnect = true
+			} else {
+				log.Println("switch to other IGinX failure: " + err.Error())
+			}
+		}
+		if reconnect {
+			req.SessionId = s.sessionId
+			resp, err = s.client.ExecuteStatement(context.Background(), &req)
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+	return NewIGinXStream(s, resp.GetQueryId(), fetchSize), nil
+}
+
+func (s *Session) fetchResult(queryId int64, fetchSize int32) (*rpc.FetchResultsResp, error) {
+	req := rpc.FetchResultsReq{
+		SessionId: s.sessionId,
+		QueryId:   queryId,
+		FetchSize: &fetchSize,
+	}
+	resp, err := s.client.FetchResults(context.Background(), &req)
+	if errors.Cause(err) == ErrExecution {
+		return nil, err
+	}
+	if errors.Cause(err) == ErrNetwork {
+		if reconnect := s.reconnect(); reconnect {
+			resp, err = s.client.FetchResults(context.Background(), &req)
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (s *Session) closeQuery(queryId int64) error {
+	req := rpc.CloseStatementReq{
+		SessionId: s.sessionId,
+		QueryId:   queryId,
+	}
+	_, err := s.client.CloseStatement(context.Background(), &req)
+	if errors.Cause(err) == ErrExecution {
+		return err
+	}
+	if errors.Cause(err) == ErrNetwork {
+		if reconnect := s.reconnect(); reconnect {
+			_, err = s.client.CloseStatement(context.Background(), &req)
+		}
+	}
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Session) ReExecuteQuery(statement string, fetchSize int32, queryId int64) (*IGinXStream, error) {
+	req := rpc.ExecuteStatementReq{
+		SessionId: s.sessionId,
+		Statement: statement,
+		QueryId:   Int64Ptr(queryId),
+	}
+	resp, err := s.client.ExecuteStatement(context.Background(), &req)
+	if errors.Cause(err) == ErrExecution {
+		return nil, err
+	}
+	if errors.Cause(err) == ErrNetwork {
+		reconnect := s.reconnect()
+		if !reconnect && s.settings.EnableHighAvailable {
+			if err := s.Open(); err == nil {
+				reconnect = true
+			} else {
+				log.Println("switch to other IGinX failure: " + err.Error())
+			}
+		}
+		if reconnect {
+			req.SessionId = s.sessionId
+			resp, err = s.client.ExecuteStatement(context.Background(), &req)
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+	return NewIGinXStream(s, resp.GetQueryId(), fetchSize), nil
 }
 
 func (s *Session) InsertColumnRecords(paths []string, timestamps []int64, valueList [][]interface{}, dataTypeList []rpc.DataType, tagsList []map[string]string) error {

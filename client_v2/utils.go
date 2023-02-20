@@ -197,3 +197,7 @@ func bytesToInt64(bys []byte) int64 {
 	_ = binary.Read(bytebuffer, binary.BigEndian, &data)
 	return data
 }
+
+func Int64Ptr(i int64) *int64 {
+	return &i
+}
