@@ -29,6 +29,7 @@ type IGinXStream struct {
 	valuesList [][]byte
 	bitmapList [][]byte
 	index      int
+	position   int64
 	state      StateType
 }
 
@@ -38,9 +39,10 @@ func NewIGinXStream(session *Session, queryId int64, fetchSize int32) *IGinXStre
 		queryId:   queryId,
 		fetchSize: fetchSize,
 
-		hasInit: false,
-		index:   0,
-		state:   Unknown,
+		hasInit:  false,
+		index:    0,
+		position: 0,
+		state:    Unknown,
 	}
 }
 
@@ -52,7 +54,7 @@ func (s *IGinXStream) fetch() error {
 	s.valuesList = nil
 	s.index = 0
 
-	resp, err := s.session.fetchResult(s.queryId, s.fetchSize)
+	resp, err := s.session.fetchResult(s.queryId, s.position, s.fetchSize)
 	if err != nil {
 		log.Printf("fail to fetch stream data, err: %s\n", err)
 		return err
@@ -67,6 +69,7 @@ func (s *IGinXStream) fetch() error {
 
 	s.bitmapList = resp.GetQueryDataSet().GetBitmapList()
 	s.valuesList = resp.GetQueryDataSet().GetValuesList()
+	s.position += int64(len(resp.GetQueryDataSet().GetValuesList()))
 
 	if !s.hasInit {
 		s.hasInit = true

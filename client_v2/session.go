@@ -331,10 +331,11 @@ func (s *Session) ExecuteQuery(statement string, fetchSize int32) (*IGinXStream,
 	return NewIGinXStream(s, resp.GetQueryId(), fetchSize), nil
 }
 
-func (s *Session) fetchResult(queryId int64, fetchSize int32) (*rpc.FetchResultsResp, error) {
+func (s *Session) fetchResult(queryId int64, position int64, fetchSize int32) (*rpc.FetchResultsResp, error) {
 	req := rpc.FetchResultsReq{
 		SessionId: s.sessionId,
 		QueryId:   queryId,
+		Position:  position,
 		FetchSize: &fetchSize,
 	}
 	resp, err := s.client.FetchResults(context.Background(), &req)
