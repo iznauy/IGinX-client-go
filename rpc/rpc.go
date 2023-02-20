@@ -13891,13 +13891,13 @@ func (p *CloseStatementReq) String() string {
 // Attributes:
 //  - SessionId
 //  - QueryId
+//  - Position
 //  - FetchSize
-//  - Timeout
 type FetchResultsReq struct {
   SessionId int64 `thrift:"sessionId,1,required" db:"sessionId" json:"sessionId"`
   QueryId int64 `thrift:"queryId,2,required" db:"queryId" json:"queryId"`
-  FetchSize *int32 `thrift:"fetchSize,3" db:"fetchSize" json:"fetchSize,omitempty"`
-  Timeout *int64 `thrift:"timeout,4" db:"timeout" json:"timeout,omitempty"`
+  Position int64 `thrift:"position,3,required" db:"position" json:"position"`
+  FetchSize *int32 `thrift:"fetchSize,4" db:"fetchSize" json:"fetchSize,omitempty"`
 }
 
 func NewFetchResultsReq() *FetchResultsReq {
@@ -13912,6 +13912,10 @@ func (p *FetchResultsReq) GetSessionId() int64 {
 func (p *FetchResultsReq) GetQueryId() int64 {
   return p.QueryId
 }
+
+func (p *FetchResultsReq) GetPosition() int64 {
+  return p.Position
+}
 var FetchResultsReq_FetchSize_DEFAULT int32
 func (p *FetchResultsReq) GetFetchSize() int32 {
   if !p.IsSetFetchSize() {
@@ -13919,19 +13923,8 @@ func (p *FetchResultsReq) GetFetchSize() int32 {
   }
 return *p.FetchSize
 }
-var FetchResultsReq_Timeout_DEFAULT int64
-func (p *FetchResultsReq) GetTimeout() int64 {
-  if !p.IsSetTimeout() {
-    return FetchResultsReq_Timeout_DEFAULT
-  }
-return *p.Timeout
-}
 func (p *FetchResultsReq) IsSetFetchSize() bool {
   return p.FetchSize != nil
-}
-
-func (p *FetchResultsReq) IsSetTimeout() bool {
-  return p.Timeout != nil
 }
 
 func (p *FetchResultsReq) Read(ctx context.Context, iprot thrift.TProtocol) error {
@@ -13941,6 +13934,7 @@ func (p *FetchResultsReq) Read(ctx context.Context, iprot thrift.TProtocol) erro
 
   var issetSessionId bool = false;
   var issetQueryId bool = false;
+  var issetPosition bool = false;
 
   for {
     _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin(ctx)
@@ -13972,17 +13966,18 @@ func (p *FetchResultsReq) Read(ctx context.Context, iprot thrift.TProtocol) erro
         }
       }
     case 3:
-      if fieldTypeId == thrift.I32 {
+      if fieldTypeId == thrift.I64 {
         if err := p.ReadField3(ctx, iprot); err != nil {
           return err
         }
+        issetPosition = true
       } else {
         if err := iprot.Skip(ctx, fieldTypeId); err != nil {
           return err
         }
       }
     case 4:
-      if fieldTypeId == thrift.I64 {
+      if fieldTypeId == thrift.I32 {
         if err := p.ReadField4(ctx, iprot); err != nil {
           return err
         }
@@ -14009,6 +14004,9 @@ func (p *FetchResultsReq) Read(ctx context.Context, iprot thrift.TProtocol) erro
   if !issetQueryId{
     return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field QueryId is not set"));
   }
+  if !issetPosition{
+    return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field Position is not set"));
+  }
   return nil
 }
 
@@ -14031,19 +14029,19 @@ func (p *FetchResultsReq)  ReadField2(ctx context.Context, iprot thrift.TProtoco
 }
 
 func (p *FetchResultsReq)  ReadField3(ctx context.Context, iprot thrift.TProtocol) error {
-  if v, err := iprot.ReadI32(ctx); err != nil {
+  if v, err := iprot.ReadI64(ctx); err != nil {
   return thrift.PrependError("error reading field 3: ", err)
 } else {
-  p.FetchSize = &v
+  p.Position = v
 }
   return nil
 }
 
 func (p *FetchResultsReq)  ReadField4(ctx context.Context, iprot thrift.TProtocol) error {
-  if v, err := iprot.ReadI64(ctx); err != nil {
+  if v, err := iprot.ReadI32(ctx); err != nil {
   return thrift.PrependError("error reading field 4: ", err)
 } else {
-  p.Timeout = &v
+  p.FetchSize = &v
 }
   return nil
 }
@@ -14085,25 +14083,23 @@ func (p *FetchResultsReq) writeField2(ctx context.Context, oprot thrift.TProtoco
 }
 
 func (p *FetchResultsReq) writeField3(ctx context.Context, oprot thrift.TProtocol) (err error) {
-  if p.IsSetFetchSize() {
-    if err := oprot.WriteFieldBegin(ctx, "fetchSize", thrift.I32, 3); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:fetchSize: ", p), err) }
-    if err := oprot.WriteI32(ctx, int32(*p.FetchSize)); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T.fetchSize (3) field write error: ", p), err) }
-    if err := oprot.WriteFieldEnd(ctx); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T write field end error 3:fetchSize: ", p), err) }
-  }
+  if err := oprot.WriteFieldBegin(ctx, "position", thrift.I64, 3); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:position: ", p), err) }
+  if err := oprot.WriteI64(ctx, int64(p.Position)); err != nil {
+  return thrift.PrependError(fmt.Sprintf("%T.position (3) field write error: ", p), err) }
+  if err := oprot.WriteFieldEnd(ctx); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 3:position: ", p), err) }
   return err
 }
 
 func (p *FetchResultsReq) writeField4(ctx context.Context, oprot thrift.TProtocol) (err error) {
-  if p.IsSetTimeout() {
-    if err := oprot.WriteFieldBegin(ctx, "timeout", thrift.I64, 4); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T write field begin error 4:timeout: ", p), err) }
-    if err := oprot.WriteI64(ctx, int64(*p.Timeout)); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T.timeout (4) field write error: ", p), err) }
+  if p.IsSetFetchSize() {
+    if err := oprot.WriteFieldBegin(ctx, "fetchSize", thrift.I32, 4); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 4:fetchSize: ", p), err) }
+    if err := oprot.WriteI32(ctx, int32(*p.FetchSize)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.fetchSize (4) field write error: ", p), err) }
     if err := oprot.WriteFieldEnd(ctx); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T write field end error 4:timeout: ", p), err) }
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 4:fetchSize: ", p), err) }
   }
   return err
 }
@@ -14116,17 +14112,12 @@ func (p *FetchResultsReq) Equals(other *FetchResultsReq) bool {
   }
   if p.SessionId != other.SessionId { return false }
   if p.QueryId != other.QueryId { return false }
+  if p.Position != other.Position { return false }
   if p.FetchSize != other.FetchSize {
     if p.FetchSize == nil || other.FetchSize == nil {
       return false
     }
     if (*p.FetchSize) != (*other.FetchSize) { return false }
-  }
-  if p.Timeout != other.Timeout {
-    if p.Timeout == nil || other.Timeout == nil {
-      return false
-    }
-    if (*p.Timeout) != (*other.Timeout) { return false }
   }
   return true
 }
