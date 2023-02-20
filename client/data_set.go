@@ -2,7 +2,7 @@ package client
 
 import (
 	"fmt"
-	"github.com/THUIGinX/IGinX-client-go/rpc"
+	"github.com/iznauy/IGinX-client-go/rpc"
 )
 
 type QueryDataSet struct {

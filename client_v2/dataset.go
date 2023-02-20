@@ -1,7 +1,7 @@
 package client_v2
 
 import (
-	"github.com/THUIGinX/IGinX-client-go/rpc"
+	"github.com/iznauy/IGinX-client-go/rpc"
 	"log"
 )
 

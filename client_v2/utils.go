@@ -7,7 +7,7 @@ import (
 	"math"
 	"reflect"
 
-	"github.com/THUIGinX/IGinX-client-go/rpc"
+	"github.com/iznauy/IGinX-client-go/rpc"
 )
 
 func TimestampsToBytes(timestamps []int64) ([]byte, error) {

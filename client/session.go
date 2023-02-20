@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/THUIGinX/IGinX-client-go/rpc"
 	"github.com/apache/thrift/lib/go/thrift"
+	"github.com/iznauy/IGinX-client-go/rpc"
 )
 
 const (

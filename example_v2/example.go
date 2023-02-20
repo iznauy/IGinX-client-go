@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/THUIGinX/IGinX-client-go/client_v2"
-	"github.com/THUIGinX/IGinX-client-go/rpc"
+	"github.com/iznauy/IGinX-client-go/client_v2"
+	"github.com/iznauy/IGinX-client-go/rpc"
 	"log"
 )
 
