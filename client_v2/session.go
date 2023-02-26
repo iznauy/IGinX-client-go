@@ -432,38 +432,32 @@ func (s *Session) InsertColumnRecords(paths []string, timestamps []int64, valueL
 	}
 
 	// 保证时间戳递增
-	timeIndex := make([]int, len(timestamps))
+	timeIndex := make(map[int64]int, len(timestamps))
 	for i := range timestamps {
-		timeIndex[i] = i
+		timeIndex[timestamps[i]] = i
 	}
-	sort.Slice(timeIndex, func(i, j int) bool {
-		return timestamps[i] < timestamps[j]
-	})
 	sort.Slice(timestamps, func(i, j int) bool {
 		return timestamps[i] < timestamps[j]
 	})
 	for i := range valueList {
 		var values []interface{}
-		for j := range timestamps {
-			values = append(values, valueList[i][timeIndex[j]])
+		for _, timestamp := range timestamps {
+			values = append(values, valueList[i][timeIndex[timestamp]])
 		}
 		valueList[i] = values
 	}
 	// 保证序列递增
-	pathIndex := make([]int, len(paths))
+	pathIndex := make(map[string]int, len(paths))
 	for i := range paths {
-		pathIndex[i] = i
+		pathIndex[paths[i]] = i
 	}
-	sort.Slice(pathIndex, func(i, j int) bool {
-		return paths[i] < paths[j]
-	})
 	sort.Strings(paths)
 	// 重排数据和数据类型
 	var sortedValueList [][]interface{}
 	var sortedDataTypeList []rpc.DataType
-	for i := range pathIndex {
-		sortedValueList = append(sortedValueList, valueList[pathIndex[i]])
-		sortedDataTypeList = append(sortedDataTypeList, dataTypeList[pathIndex[i]])
+	for _, path := range paths {
+		sortedValueList = append(sortedValueList, valueList[pathIndex[path]])
+		sortedDataTypeList = append(sortedDataTypeList, dataTypeList[pathIndex[path]])
 	}
 	// 重排tagKV
 	var sortedTagsList []map[string]string
@@ -547,38 +541,32 @@ func (s *Session) InsertNonAlignedColumnRecords(paths []string, timestamps []int
 	}
 
 	// 保证时间戳递增
-	timeIndex := make([]int, len(timestamps))
+	timeIndex := make(map[int64]int, len(timestamps))
 	for i := range timestamps {
-		timeIndex[i] = i
+		timeIndex[timestamps[i]] = i
 	}
-	sort.Slice(timeIndex, func(i, j int) bool {
-		return timestamps[i] < timestamps[j]
-	})
 	sort.Slice(timestamps, func(i, j int) bool {
 		return timestamps[i] < timestamps[j]
 	})
 	for i := range valueList {
 		var values []interface{}
-		for j := range timestamps {
-			values = append(values, valueList[i][timeIndex[j]])
+		for _, timestamp := range timestamps {
+			values = append(values, valueList[i][timeIndex[timestamp]])
 		}
 		valueList[i] = values
 	}
 	// 保证序列递增
-	pathIndex := make([]int, len(paths))
+	pathIndex := make(map[string]int, len(paths))
 	for i := range paths {
-		pathIndex[i] = i
+		pathIndex[paths[i]] = i
 	}
-	sort.Slice(pathIndex, func(i, j int) bool {
-		return paths[i] < paths[j]
-	})
 	sort.Strings(paths)
 	// 重排数据和数据类型
 	var sortedValueList [][]interface{}
 	var sortedDataTypeList []rpc.DataType
-	for i := range pathIndex {
-		sortedValueList = append(sortedValueList, valueList[pathIndex[i]])
-		sortedDataTypeList = append(sortedDataTypeList, dataTypeList[pathIndex[i]])
+	for _, path := range paths {
+		sortedValueList = append(sortedValueList, valueList[pathIndex[path]])
+		sortedDataTypeList = append(sortedDataTypeList, dataTypeList[pathIndex[path]])
 	}
 	// 重排tagKV
 	var sortedTagsList []map[string]string
