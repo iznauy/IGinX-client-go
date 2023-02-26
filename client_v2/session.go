@@ -612,7 +612,7 @@ func (s *Session) InsertNonAlignedColumnRecords(paths []string, timestamps []int
 		return err
 	}
 
-	req := rpc.InsertColumnRecordsReq{
+	req := rpc.InsertNonAlignedColumnRecordsReq{
 		SessionId:    s.sessionId,
 		Paths:        paths,
 		Timestamps:   timeBytes,
@@ -622,7 +622,7 @@ func (s *Session) InsertNonAlignedColumnRecords(paths []string, timestamps []int
 		TagsList:     sortedTagsList,
 	}
 
-	err = s.client.InsertColumnRecords(context.Background(), &req)
+	err = s.client.InsertNonAlignedColumnRecords(context.Background(), &req)
 	if errors.Cause(err) == ErrExecution {
 		return err
 	}
