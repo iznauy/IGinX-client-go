@@ -281,7 +281,8 @@ func (s *Session) reconnect() bool {
 			}
 		}
 		if err != nil {
-			time.Sleep(200 * time.Millisecond)
+			log.Printf("reconnect failure %v, try to retry...\n", err)
+			time.Sleep(800 * time.Millisecond)
 		}
 	}
 	return flag
