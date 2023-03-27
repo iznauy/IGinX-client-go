@@ -2,7 +2,6 @@ package client_v2
 
 import (
 	"github.com/iznauy/IGinX-client-go/rpc"
-	"log"
 )
 
 type StateType int32
@@ -56,7 +55,7 @@ func (s *IGinXStream) fetch() error {
 
 	resp, err := s.session.fetchResult(s.queryId, s.position, s.fetchSize)
 	if err != nil {
-		log.Printf("fail to fetch stream data, err: %s\n", err)
+		//log.Printf("fail to fetch stream data, err: %s\n", err)
 		return err
 	}
 	s.state = NoMore
