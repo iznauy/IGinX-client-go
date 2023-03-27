@@ -393,7 +393,7 @@ func (s *Session) closeQuery(queryId int64) error {
 	return nil
 }
 
-func (s *Session) cancelQuery(queryId int64) error {
+func (s *Session) CancelQuery(queryId int64) error {
 	req := rpc.CancelStatementReq{
 		SessionId: s.sessionId,
 		QueryId:   queryId,
