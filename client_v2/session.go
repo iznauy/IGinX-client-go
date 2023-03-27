@@ -59,6 +59,12 @@ func (c *Client) CloseSession(ctx context.Context, req *rpc.CloseSessionReq) (*r
 	return c.client.CloseSession(ctx, req)
 }
 
+func (c *Client) CancelStatement(ctx context.Context, req *rpc.CancelStatementReq) (*rpc.Status, error) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	return c.client.CancelStatement(ctx, req)
+}
+
 func (c *Client) GetReplicaNum(ctx context.Context, req *rpc.GetReplicaNumReq) (*rpc.GetReplicaNumResp, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -381,6 +387,18 @@ func (s *Session) closeQuery(queryId int64) error {
 			_, err = s.client.CloseStatement(context.Background(), &req)
 		}
 	}
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Session) cancelQuery(queryId int64) error {
+	req := rpc.CancelStatementReq{
+		SessionId: s.sessionId,
+		QueryId:   queryId,
+	}
+	_, err := s.client.CancelStatement(context.Background(), &req)
 	if err != nil {
 		return err
 	}
