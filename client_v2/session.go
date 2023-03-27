@@ -62,7 +62,14 @@ func (c *Client) CloseSession(ctx context.Context, req *rpc.CloseSessionReq) (*r
 func (c *Client) CancelStatement(ctx context.Context, req *rpc.CancelStatementReq) (*rpc.Status, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	return c.client.CancelStatement(ctx, req)
+	status, err := c.client.CancelStatement(ctx, req)
+	if err != nil {
+		return nil, errors.Wrap(ErrNetwork, err.Error())
+	}
+	if err = verifyStatus(status); err != nil {
+		return nil, err
+	}
+	return status, nil
 }
 
 func (c *Client) GetReplicaNum(ctx context.Context, req *rpc.GetReplicaNumReq) (*rpc.GetReplicaNumResp, error) {
