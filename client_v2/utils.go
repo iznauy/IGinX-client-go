@@ -1,4 +1,4 @@
-package client
+package client_v2
 
 import (
 	"bytes"
@@ -116,7 +116,7 @@ func ColumnValuesToBytes(values []interface{}, dataType rpc.DataType) ([]byte, e
 		case rpc.DataType_DOUBLE:
 			switch value.(type) {
 			case float64:
-				binary.Write(buffer, binary.BigEndian, value)
+				_ = binary.Write(buffer, binary.BigEndian, value)
 			default:
 				return nil, fmt.Errorf("values[%d] %v(%v) must be float64", i, value, reflect.TypeOf(value))
 			}
@@ -124,8 +124,8 @@ func ColumnValuesToBytes(values []interface{}, dataType rpc.DataType) ([]byte, e
 			switch s := value.(type) {
 			case string:
 				size := len(s)
-				binary.Write(buffer, binary.BigEndian, int32(size))
-				binary.Write(buffer, binary.BigEndian, []byte(s))
+				_ = binary.Write(buffer, binary.BigEndian, int32(size))
+				_ = binary.Write(buffer, binary.BigEndian, []byte(s))
 			default:
 				return nil, fmt.Errorf("values[%d] %v(%v) must be string", i, value, reflect.TypeOf(value))
 			}
@@ -185,15 +185,19 @@ func GetValueFromBytes(buffer []byte, dataType rpc.DataType) (interface{}, []byt
 }
 
 func bytesToInt32(bys []byte) int32 {
-	bytebuff := bytes.NewBuffer(bys)
+	bytebuffer := bytes.NewBuffer(bys)
 	var data int32
-	binary.Read(bytebuff, binary.BigEndian, &data)
-	return int32(data)
+	_ = binary.Read(bytebuffer, binary.BigEndian, &data)
+	return data
 }
 
 func bytesToInt64(bys []byte) int64 {
-	bytebuff := bytes.NewBuffer(bys)
+	bytebuffer := bytes.NewBuffer(bys)
 	var data int64
-	binary.Read(bytebuff, binary.BigEndian, &data)
-	return int64(data)
+	_ = binary.Read(bytebuffer, binary.BigEndian, &data)
+	return data
+}
+
+func Int64Ptr(i int64) *int64 {
+	return &i
 }
